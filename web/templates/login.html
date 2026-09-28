@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Sign in &middot; {{ library_name }}{% endblock %}
+
+{% block content %}
+<div class="login-wrap">
+  <form class="card login-card" method="post" action="{{ url_for('views.login') }}">
+    <h1>Sign in</h1>
+    <p class="muted">Use your staff account to manage the library.</p>
+
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="next" value="{{ next }}">
+
+    <label for="username">Username</label>
+    <input id="username" name="username" autocomplete="username" autofocus required>
+
+    <label for="password">Password</label>
+    <input id="password" name="password" type="password" autocomplete="current-password" required>
+
+    <button class="primary block" type="submit">Sign in</button>
+  </form>
+
+  <div class="card hint">
+    <h2>Default accounts</h2>
+    <p class="muted">Created on the first run. Change them before real use.</p>
+    <table class="mini">
+      <tr><td><code>admin</code></td><td><code>admin12345</code></td><td>Administrator</td></tr>
+      <tr><td><code>staff</code></td><td><code>staff12345</code></td><td>Staff</td></tr>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,26 @@
+[
+    {
+        "member_id": 1,
+        "name": "Mg Mg",
+        "email": "mgmg@gmail.com",
+        "member_type": "Student",
+        "borrowed_book_ids": [
+            101,
+            104
+        ]
+    },
+    {
+        "member_id": 2,
+        "name": "U Aung",
+        "email": "uaung@gmail.com",
+        "member_type": "Teacher",
+        "borrowed_book_ids": []
+    },
+    {
+        "member_id": 3,
+        "name": "Ma Ma",
+        "email": "mama@gmail.com",
+        "member_type": "Student",
+        "borrowed_book_ids": []
+    }
+]

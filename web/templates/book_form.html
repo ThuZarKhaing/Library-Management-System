@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} &middot; {{ library_name }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{{ title }}</h1>
+    <p class="muted">The next free ID is {{ next_book_id }}.</p>
+  </div>
+  <a class="button ghost" href="{{ url_for('views.books') }}">Back to books</a>
+</div>
+
+<form class="card form-card" method="post" action="{{ action }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+  <label for="book_id">Book ID</label>
+  <input id="book_id" name="book_id" value="{{ form.book_id }}" required>
+
+  <label for="title">Title</label>
+  <input id="title" name="title" value="{{ form.title }}" required autofocus>
+
+  <label for="author">Author</label>
+  <input id="author" name="author" value="{{ form.author }}" required>
+
+  <label for="category">Category</label>
+  <input id="category" name="category" value="{{ form.category }}" list="categories">
+  <datalist id="categories">
+    <option>Programming</option>
+    <option>Computer Science</option>
+    <option>Fiction</option>
+    <option>History</option>
+    <option>General</option>
+  </datalist>
+
+  <div class="form-actions">
+    <button class="primary" type="submit">{{ submit }}</button>
+    <a class="button ghost" href="{{ url_for('views.books') }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

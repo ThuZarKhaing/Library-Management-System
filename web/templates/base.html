@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ library_name }}{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="{{ url_for('views.dashboard') }}">
+    <span class="brand-mark">LM</span>
+    <span>
+      <strong>Library Management System</strong>
+      <small>{{ library_name }}</small>
+    </span>
+  </a>
+
+  {% if current_user %}
+    <nav class="nav">
+      {% if can(current_user.role, 'view_dashboard') %}
+        <a href="{{ url_for('views.dashboard') }}"
+           class="{{ 'on' if request.endpoint == 'views.dashboard' }}">Dashboard</a>
+      {% endif %}
+      {% if can(current_user.role, 'view_books') %}
+        <a href="{{ url_for('views.books') }}"
+           class="{{ 'on' if request.endpoint in ('views.books', 'views.new_book', 'views.edit_book') }}">Books</a>
+      {% endif %}
+      {% if can(current_user.role, 'view_members') %}
+        <a href="{{ url_for('views.members') }}"
+           class="{{ 'on' if request.endpoint in ('views.members', 'views.new_member', 'views.edit_member') }}">Members</a>
+      {% endif %}
+      {% if can(current_user.role, 'view_users') %}
+        <a href="{{ url_for('views.users') }}"
+           class="{{ 'on' if request.endpoint in ('views.users', 'views.new_user') }}">Staff accounts</a>
+      {% endif %}
+    </nav>
+
+    <div class="who">
+      <a class="who-name" href="{{ url_for('views.profile') }}">
+        {{ current_user.full_name or current_user.username }}
+        <span class="badge role-{{ current_user.role }}">{{ current_user.role_label }}</span>
+      </a>
+      <form method="post" action="{{ url_for('views.logout') }}" class="inline">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="link" type="submit">Sign out</button>
+      </form>
+    </div>
+  {% endif %}
+</header>
+
+<main class="page">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flashes">
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+  {{ library_name }} &middot; Python OOP project &middot; data stored in <code>data/*.json</code>
+</footer>
+
+</body>
+</html>

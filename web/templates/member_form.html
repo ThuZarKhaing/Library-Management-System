@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} &middot; {{ library_name }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{{ title }}</h1>
+    <p class="muted">The next free ID is {{ next_member_id }}.</p>
+  </div>
+  <a class="button ghost" href="{{ url_for('views.members') }}">Back to members</a>
+</div>
+
+<form class="card form-card" method="post" action="{{ action }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+  <label for="member_id">Member ID</label>
+  <input id="member_id" name="member_id" value="{{ form.member_id }}" required>
+
+  <label for="name">Full name</label>
+  <input id="name" name="name" value="{{ form.name }}" required autofocus>
+
+  <label for="email">Email</label>
+  <input id="email" name="email" type="email" value="{{ form.email }}" required>
+
+  <label for="member_type">Member type</label>
+  {% if request.endpoint == 'views.edit_member' %}
+    <input id="member_type" value="{{ form.member_type }}" disabled>
+    <p class="hint">The type decides the borrowing limit and cannot be changed after registration.</p>
+  {% else %}
+    <select id="member_type" name="member_type">
+      <option value="Student" {{ 'selected' if form.member_type == 'Student' }}>Student - 3 books</option>
+      <option value="Teacher" {{ 'selected' if form.member_type == 'Teacher' }}>Teacher - 10 books</option>
+    </select>
+  {% endif %}
+
+  <div class="form-actions">
+    <button class="primary" type="submit">{{ submit }}</button>
+    <a class="button ghost" href="{{ url_for('views.members') }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

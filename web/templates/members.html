@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Members &middot; {{ library_name }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Members</h1>
+    <p class="muted">{{ rows|length }} shown{% if keyword %} for &ldquo;{{ keyword }}&rdquo;{% endif %}</p>
+  </div>
+  {% if can(current_user.role, 'add_member') %}
+    <a class="button primary" href="{{ url_for('views.new_member') }}">Register member</a>
+  {% endif %}
+</div>
+
+<form class="filters" method="get" action="{{ url_for('views.members') }}">
+  <input type="search" name="q" value="{{ keyword }}" placeholder="Name or email">
+  <button class="button" type="submit">Search</button>
+  {% if keyword %}
+    <a class="button ghost" href="{{ url_for('views.members') }}">Clear</a>
+  {% endif %}
+</form>
+
+<div class="card">
+  {% if rows %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th><th>Name</th><th>Email</th><th>Type</th>
+          <th>Books</th><th>Limit</th><th>On loan</th><th class="right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for member in rows %}
+          <tr>
+            <td class="mono">{{ member.member_id }}</td>
+            <td><strong>{{ member.name }}</strong></td>
+            <td>{{ member.email }}</td>
+            <td><span class="badge">{{ member.member_type() }}</span></td>
+            <td class="{{ 'over' if member.has_reached_limit() }}">{{ member.borrowed_count() }}</td>
+            <td>{{ member.borrowing_limit() }}</td>
+            <td>
+              {% if member.borrowed_count() == 0 %}
+                <span class="muted">-</span>
+              {% else %}
+                <ul class="books-held">
+                  {% for book in member.get_borrowed_books() %}
+                    <li>{{ book.title }}</li>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+            </td>
+            <td class="right nowrap">
+              {% if can(current_user.role, 'edit_member') %}
+                <a class="small button ghost" href="{{ url_for('views.edit_member', member_id=member.member_id) }}">Edit</a>
+              {% endif %}
+              {% if can(current_user.role, 'delete_member') %}
+                <form class="inline" method="post"
+                      action="{{ url_for('views.delete_member', member_id=member.member_id) }}"
+                      onsubmit="return confirm('Delete {{ member.name }}?');">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <button class="small danger ghost" type="submit">Delete</button>
+                </form>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="empty">No member matches that search.</p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Dashboard &middot; {{ library_name }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Dashboard</h1>
+    <p class="muted">Signed in as {{ current_user.full_name or current_user.username }}
+      ({{ current_user.role_label }})</p>
+  </div>
+  <div class="head-actions">
+    {% if can(current_user.role, 'add_book') %}
+      <a class="button" href="{{ url_for('views.new_book') }}">Add book</a>
+    {% endif %}
+    {% if can(current_user.role, 'add_member') %}
+      <a class="button" href="{{ url_for('views.new_member') }}">Register member</a>
+    {% endif %}
+    {% if can(current_user.role, 'borrow_book') %}
+      <a class="button primary" href="{{ url_for('views.books', status='available') }}">Borrow a book</a>
+    {% endif %}
+  </div>
+</div>
+
+<section class="cards">
+  <div class="card stat">
+    <span class="stat-label">Books in the catalogue</span>
+    <span class="stat-value">{{ stats.total_books }}</span>
+  </div>
+  <div class="card stat">
+    <span class="stat-label">Available now</span>
+    <span class="stat-value ok">{{ stats.available_books }}</span>
+  </div>
+  <div class="card stat">
+    <span class="stat-label">On loan</span>
+    <span class="stat-value warn">{{ stats.borrowed_books }}</span>
+  </div>
+  <div class="card stat">
+    <span class="stat-label">Registered members</span>
+    <span class="stat-value">{{ stats.total_members }}</span>
+  </div>
+</section>
+
+<section class="split">
+  <div class="card">
+    <h2>Currently on loan</h2>
+    {% if on_loan %}
+      <table class="table">
+        <thead>
+          <tr><th>Book</th><th>Member</th><th>Type</th></tr>
+        </thead>
+        <tbody>
+          {% for book, member in on_loan %}
+            <tr>
+              <td><a href="{{ url_for('views.books', q=book.title) }}">{{ book.title }}</a></td>
+              <td>{{ member.name if member else '-' }}</td>
+              <td><span class="badge">{{ member.member_type() if member else '-' }}</span></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if stats.borrowed_books > on_loan|length %}
+        <p class="muted small">
+          Showing {{ on_loan|length }} of {{ stats.borrowed_books }}.
+          <a href="{{ url_for('views.books', status='borrowed') }}">See all</a>
+        </p>
+      {% endif %}
+    {% else %}
+      <p class="empty">Every book is on the shelf.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Loans by member type</h2>
+    {% if stats.borrowed_by_type %}
+      <table class="table">
+        <thead><tr><th>Type</th><th>Books on loan</th></tr></thead>
+        <tbody>
+          {% for member_type, count in stats.borrowed_by_type|dictsort %}
+            <tr><td>{{ member_type }}</td><td>{{ count }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="empty">Nothing on loan right now.</p>
+    {% endif %}
+
+    <h2 class="mt">Your account</h2>
+    <ul class="plain">
+      <li><strong>Username</strong> {{ current_user.username }}</li>
+      <li><strong>Role</strong> {{ current_user.role_label }}</li>
+      <li><strong>Staff accounts</strong> {{ staff_count }}</li>
+    </ul>
+  </div>
+</section>
+{% endblock %}

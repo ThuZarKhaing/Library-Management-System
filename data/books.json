@@ -1,0 +1,51 @@
+[
+    {
+        "book_id": 101,
+        "title": "Python Programming",
+        "author": "John Smith",
+        "category": "Programming",
+        "is_available": false
+    },
+    {
+        "book_id": 102,
+        "title": "Data Structures",
+        "author": "Robert Brown",
+        "category": "Computer Science",
+        "is_available": true
+    },
+    {
+        "book_id": 103,
+        "title": "Clean Code",
+        "author": "Robert Martin",
+        "category": "Programming",
+        "is_available": true
+    },
+    {
+        "book_id": 104,
+        "title": "Introduction to Algorithms",
+        "author": "Thomas Cormen",
+        "category": "Computer Science",
+        "is_available": false
+    },
+    {
+        "book_id": 105,
+        "title": "The Great Gatsby",
+        "author": "F. Scott Fitzgerald",
+        "category": "Fiction",
+        "is_available": true
+    },
+    {
+        "book_id": 106,
+        "title": "Database Systems",
+        "author": "Silberschatz",
+        "category": "Computer Science",
+        "is_available": true
+    },
+    {
+        "book_id": 107,
+        "title": "Accounting",
+        "author": "Kaung",
+        "category": "General",
+        "is_available": true
+    }
+]

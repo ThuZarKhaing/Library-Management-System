@@ -1,0 +1,541 @@
+es. Let's build the Library Management System as a complete OOP project in 3 stages, so you can use it for your Python class and gradually introduce each OOP concept.
+
+Project: Library Management System
+Stage 1 — Console + OOP
+
+Students will learn:
+
+Class and object
+__init__()
+Instance attributes
+Methods
+Encapsulation
+Inheritance
+Polymorphism
+Composition
+Lists of objects
+Stage 2 — File Storage
+
+Add:
+
+JSON
+Save books
+Save members
+Load data
+Persistent data
+Stage 3 — Tkinter GUI
+
+Add:
+
+Tkinter
+Entry
+Button
+Label
+Treeview
+Search
+Borrow/Return
+Messagebox
+Stage 1: Basic OOP Version
+
+I recommend starting with three main classes:
+
+Book
+Member
+Library
+
+Then introduce inheritance:
+
+Member
+  │
+  ├── StudentMember
+  │
+  └── TeacherMember
+
+The relationship is:
+
+                Library
+               /       \
+              /         \
+           Books       Members
+            │             │
+          Book          Member
+                         /    \
+                        /      \
+               StudentMember  TeacherMember
+1. Book class
+class Book:
+    def __init__(self, book_id, title, author, category):
+        self.book_id = book_id
+        self.title = title
+        self.author = author
+        self.category = category
+        self.is_available = True
+
+    def display_info(self):
+        status = "Available" if self.is_available else "Borrowed"
+
+        print(f"ID: {self.book_id}")
+        print(f"Title: {self.title}")
+        print(f"Author: {self.author}")
+        print(f"Category: {self.category}")
+        print(f"Status: {status}")
+
+Create objects:
+
+book1 = Book(
+    101,
+    "Python Programming",
+    "John Smith",
+    "Programming"
+)
+
+book2 = Book(
+    102,
+    "Data Structures",
+    "Robert Brown",
+    "Computer Science"
+)
+
+book1.display_info()
+2. Member class
+class Member:
+    def __init__(self, member_id, name, email):
+        self.member_id = member_id
+        self.name = name
+        self.email = email
+        self.borrowed_books = []
+
+    def borrow_book(self, book):
+        self.borrowed_books.append(book)
+
+    def return_book(self, book):
+        self.borrowed_books.remove(book)
+
+    def display_info(self):
+        print(f"ID: {self.member_id}")
+        print(f"Name: {self.name}")
+        print(f"Email: {self.email}")
+        print(f"Borrowed Books: {len(self.borrowed_books)}")
+
+    def borrowing_limit(self):
+        return 3
+3. Inheritance
+
+Now we can create different types of members.
+
+Student
+class StudentMember(Member):
+
+    def borrowing_limit(self):
+        return 3
+Teacher
+class TeacherMember(Member):
+
+    def borrowing_limit(self):
+        return 10
+
+Now:
+
+student = StudentMember(
+    1,
+    "Mg Mg",
+    "mgmg@gmail.com"
+)
+
+teacher = TeacherMember(
+    2,
+    "U Aung",
+    "uaung@gmail.com"
+)
+4. Polymorphism
+
+This is a very good example for your students.
+
+members = [student, teacher]
+
+for member in members:
+    print(
+        member.name,
+        "can borrow",
+        member.borrowing_limit(),
+        "books"
+    )
+
+Output:
+
+Mg Mg can borrow 3 books
+U Aung can borrow 10 books
+
+The same method:
+
+member.borrowing_limit()
+
+behaves differently depending on the object.
+
+That demonstrates polymorphism.
+
+5. Library class
+
+Now we put everything together.
+
+class Library:
+
+    def __init__(self, name):
+        self.name = name
+        self.books = []
+        self.members = []
+
+    def add_book(self, book):
+        self.books.append(book)
+        print("Book added successfully.")
+
+    def register_member(self, member):
+        self.members.append(member)
+        print("Member registered successfully.")
+
+    def display_books(self):
+        print("\n===== BOOK LIST =====")
+
+        for book in self.books:
+            book.display_info()
+            print("---------------------")
+
+    def display_members(self):
+        print("\n===== MEMBER LIST =====")
+
+        for member in self.members:
+            member.display_info()
+            print("-----------------------")
+
+This demonstrates composition.
+
+The Library object contains:
+
+self.books
+self.members
+
+which contain Book and Member objects.
+
+6. Borrow Book
+
+Add this method to Library:
+
+def borrow_book(self, member_id, book_id):
+
+    member = None
+    book = None
+
+    for m in self.members:
+        if m.member_id == member_id:
+            member = m
+
+    for b in self.books:
+        if b.book_id == book_id:
+            book = b
+
+    if member is None:
+        print("Member not found.")
+        return
+
+    if book is None:
+        print("Book not found.")
+        return
+
+    if not book.is_available:
+        print("Book is already borrowed.")
+        return
+
+    if len(member.borrowed_books) >= member.borrowing_limit():
+        print("Borrowing limit reached.")
+        return
+
+    member.borrow_book(book)
+    book.is_available = False
+
+    print(
+        f"{member.name} borrowed "
+        f"'{book.title}' successfully."
+    )
+7. Return Book
+def return_book(self, member_id, book_id):
+
+    member = None
+    book = None
+
+    for m in self.members:
+        if m.member_id == member_id:
+            member = m
+
+    for b in self.books:
+        if b.book_id == book_id:
+            book = b
+
+    if member is None:
+        print("Member not found.")
+        return
+
+    if book is None:
+        print("Book not found.")
+        return
+
+    if book not in member.borrowed_books:
+        print("This member did not borrow this book.")
+        return
+
+    member.return_book(book)
+    book.is_available = True
+
+    print(
+        f"{member.name} returned "
+        f"'{book.title}' successfully."
+    )
+8. Search Book
+def search_book(self, keyword):
+
+    found = False
+
+    for book in self.books:
+
+        if (
+            keyword.lower() in book.title.lower()
+            or keyword.lower() in book.author.lower()
+        ):
+            book.display_info()
+            print("------------------")
+            found = True
+
+    if not found:
+        print("No book found.")
+9. Complete example
+
+Now students can create their library:
+
+library = Library("My School Library")
+
+book1 = Book(
+    101,
+    "Python Programming",
+    "John Smith",
+    "Programming"
+)
+
+book2 = Book(
+    102,
+    "Data Structures",
+    "Robert Brown",
+    "Computer Science"
+)
+
+student = StudentMember(
+    1,
+    "Mg Mg",
+    "mgmg@gmail.com"
+)
+
+teacher = TeacherMember(
+    2,
+    "U Aung",
+    "uaung@gmail.com"
+)
+
+library.add_book(book1)
+library.add_book(book2)
+
+library.register_member(student)
+library.register_member(teacher)
+
+Then:
+
+library.display_books()
+
+Borrow:
+
+library.borrow_book(1, 101)
+
+Return:
+
+library.return_book(1, 101)
+
+Search:
+
+library.search_book("Python")
+Stage 2 — JSON Storage
+
+Once students understand the OOP version, don't immediately jump to Tkinter.
+
+First teach them data persistence.
+
+Create:
+
+library_project/
+│
+├── main.py
+├── book.py
+├── member.py
+├── library.py
+│
+└── data/
+    ├── books.json
+    └── members.json
+
+The application should be able to:
+
+Program starts
+      ↓
+Load books.json
+      ↓
+Load members.json
+      ↓
+Create objects
+      ↓
+User operates system
+      ↓
+Add / borrow / return
+      ↓
+Save JSON
+      ↓
+Program closes
+
+For example:
+
+[
+    {
+        "book_id": 101,
+        "title": "Python Programming",
+        "author": "John Smith",
+        "category": "Programming",
+        "is_available": true
+    }
+]
+Stage 3 — Tkinter GUI
+
+Finally, turn the system into a desktop application.
+
+I recommend this layout:
+
+┌──────────────────────────────────────────────────┐
+│             LIBRARY MANAGEMENT SYSTEM            │
+├──────────────────────────────────────────────────┤
+│                                                  │
+│  [ Add Book ]     [ Add Member ]                 │
+│                                                  │
+│  [ Borrow Book ]  [ Return Book ]                │
+│                                                  │
+│  [ Search Book ]  [ View Members ]               │
+│                                                  │
+├──────────────────────────────────────────────────┤
+│ Search: [____________________] [Search]           │
+├──────────────────────────────────────────────────┤
+│ ID │ Title              │ Author       │ Status   │
+│────┼────────────────────┼──────────────┼──────────│
+│101 │ Python Programming │ John Smith   │Available │
+│102 │ Data Structures    │ Robert Brown │Borrowed  │
+└──────────────────────────────────────────────────┘
+
+For the GUI, use:
+
+import tkinter as tk
+from tkinter import ttk
+from tkinter import messagebox
+
+And particularly:
+
+ttk.Treeview
+
+for displaying books and members.
+
+A good student project progression
+
+Since you're teaching Python/OOP, I would teach it like this:
+
+Lesson 1 — Book
+
+Teach:
+
+class
+__init__
+attributes
+objects
+methods
+
+Students create several Book objects.
+
+Lesson 2 — Member
+
+Teach:
+
+lists
+objects inside lists
+methods
+Lesson 3 — Library
+
+Teach:
+
+composition
+object interaction
+
+Example:
+
+Library → Book
+Library → Member
+Member → Book
+Lesson 4 — Inheritance
+
+Teach:
+
+Member
+   ↓
+StudentMember
+TeacherMember
+Lesson 5 — Polymorphism
+
+Teach:
+
+student.borrowing_limit()
+teacher.borrowing_limit()
+Lesson 6 — Encapsulation
+
+Introduce:
+
+self.__borrowed_books
+
+and methods such as:
+
+get_borrowed_books()
+add_book()
+remove_book()
+Lesson 7 — JSON
+
+Teach:
+
+json.dump()
+json.load()
+Lesson 8 — Tkinter
+
+Turn the console application into a GUI.
+
+Final project architecture
+
+By the end, I recommend your students have:
+
+Library Management System
+│
+├── models/
+│   ├── book.py
+│   ├── member.py
+│   ├── student.py
+│   └── teacher.py
+│
+├── services/
+│   └── library.py
+│
+├── data/
+│   ├── books.json
+│   └── members.json
+│
+├── gui/
+│   └── app.py
+│
+└── main.py
+
+This is a very good transition from basic Python → OOP → inheritance/polymorphism → file handling → GUI, and it is much more manageable for students than giving them the complete application at once.

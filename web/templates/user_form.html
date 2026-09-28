@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Add a staff account &middot; {{ library_name }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>{{ title }}</h1>
+    <p class="muted">The password is stored as a hash, never as plain text.</p>
+  </div>
+  <a class="button ghost" href="{{ url_for('views.users') }}">Back to accounts</a>
+</div>
+
+<form class="card form-card" method="post" action="{{ action }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+  <label for="username">Username</label>
+  <input id="username" name="username" value="{{ form.username }}" required autofocus>
+
+  <label for="full_name">Full name</label>
+  <input id="full_name" name="full_name" value="{{ form.full_name }}">
+
+  <label for="role">Role</label>
+  <select id="role" name="role">
+    <option value="staff" {{ 'selected' if form.role == 'staff' }}>Staff - run the desk</option>
+    <option value="admin" {{ 'selected' if form.role == 'admin' }}>Administrator - full access</option>
+  </select>
+
+  <label for="password">Password</label>
+  <input id="password" name="password" type="password" autocomplete="new-password" required>
+  <p class="hint">At least 8 characters.</p>
+
+  <label for="password2">Repeat password</label>
+  <input id="password2" name="password2" type="password" autocomplete="new-password" required>
+
+  <div class="form-actions">
+    <button class="primary" type="submit">{{ submit }}</button>
+    <a class="button ghost" href="{{ url_for('views.users') }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

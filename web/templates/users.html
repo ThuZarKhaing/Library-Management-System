@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Staff accounts &middot; {{ library_name }}{% endblock %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <h1>Staff accounts</h1>
+    <p class="muted">Administrators can do everything. Staff can run the desk but cannot delete
+      records or manage accounts.</p>
+  </div>
+  <a class="button primary" href="{{ url_for('views.new_user') }}">Add account</a>
+</div>
+
+<div class="card">
+  <table class="table">
+    <thead>
+      <tr><th>Username</th><th>Name</th><th>Role</th><th class="right">Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+        <tr>
+          <td class="mono">{{ row.username }}{% if row.username == current_user.username %}
+            <span class="badge">you</span>{% endif %}</td>
+          <td>{{ row.full_name or '-' }}</td>
+          <td>
+            <form class="inline" method="post" action="{{ url_for('views.change_role', username=row.username) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <select name="role" {{ 'disabled' if row.username == current_user.username }}>
+                <option value="staff" {{ 'selected' if row.role == 'staff' }}>Staff</option>
+                <option value="admin" {{ 'selected' if row.role == 'admin' }}>Administrator</option>
+              </select>
+              {% if row.username != current_user.username %}
+                <button class="small" type="submit">Change</button>
+              {% endif %}
+            </form>
+          </td>
+          <td class="right">
+            {% if row.username != current_user.username %}
+              <form class="inline" method="post" action="{{ url_for('views.delete_user', username=row.username) }}"
+                    onsubmit="return confirm('Delete the account {{ row.username }}?');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="small danger ghost" type="submit">Delete</button>
+              </form>
+            {% else %}
+              <span class="muted small">current account</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="card">
+  <h2>What each role can do</h2>
+  <table class="table">
+    <thead><tr><th>Action</th><th>Staff</th><th>Administrator</th></tr></thead>
+    <tbody>
+      {% for name, label in capability_labels|dictsort %}
+        <tr>
+          <td>{{ label }}</td>
+          <td class="{{ 'yes' if 'staff' in capability_roles[name] else 'no' }}">
+            {{ 'yes' if 'staff' in capability_roles[name] else 'no' }}
+          </td>
+          <td class="{{ 'yes' if 'admin' in capability_roles[name] else 'no' }}">
+            {{ 'yes' if 'admin' in capability_roles[name] else 'no' }}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
